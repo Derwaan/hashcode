@@ -1,4 +1,5 @@
 import sys
+import queue
 
 text = []
 
@@ -31,7 +32,36 @@ class Route:
                                 self.distance())
 
 
+class Car:
+    def __init__(self, car_id):
+        self.car_id = car_id
+        self.routes = []
+        self.count = 0
+
+    def add_route(self, route):
+        self.routes.append(route)
+        self.count += route.distance()
+
+    def __eq__(self, other):
+        if self.count == other.count:
+            return True
+
+    def __lt__(self, other):
+        if self.count < other.count:
+            return True
+
+    def __gt__(self, other):
+        if self.count > other.count:
+            return True
+
+    def __str__(self):
+        return "%s : %s with %s" % (self.car_id, self.routes, self.count)
+
 routes = []
+cars_queue = queue.PriorityQueue()
+
+for i in range(1, F+1):
+    cars_queue.put(Car(i))
 
 for i in range(1, N+1):
     input = text[i].split()
@@ -49,4 +79,12 @@ for i in range(1, N+1):
 routes.sort(key=lambda x: (x.earliest_start, x.distance()))
 
 for route in routes:
+    free_car = cars_queue.get()
+    free_car.add_route(route)
+    cars_queue.put(free_car)
+
+for route in routes:
     print(route)
+
+while not cars_queue.empty():
+    print(cars_queue.get())
