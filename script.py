@@ -17,7 +17,8 @@ T = int(input[5])
 
 
 class Route:
-    def __init__(self, start_point, end_point, earliest_start, latest_finish):
+    def __init__(self, id, start_point, end_point, earliest_start, latest_finish):
+        self.id = id
         self.start_point = start_point
         self.end_point = end_point
         self.earliest_start = earliest_start
@@ -55,7 +56,10 @@ class Car:
             return True
 
     def __str__(self):
-        return "%s : %s with %s" % (self.car_id, self.routes, self.count)
+        output = str(len(self.routes))
+        for route in self.routes:
+            output +=" " + str(route.id)
+        return output
 
 routes = []
 cars_queue = queue.PriorityQueue()
@@ -72,7 +76,7 @@ for i in range(1, N+1):
     s = int(input[4])
     f = int(input[5])
 
-    route = Route((a,b), (x,y), s, f)
+    route = Route(i-1, (a,b), (x,y), s, f)
     routes.append(route)
 
 
@@ -82,9 +86,6 @@ for route in routes:
     free_car = cars_queue.get()
     free_car.add_route(route)
     cars_queue.put(free_car)
-
-for route in routes:
-    print(route)
 
 while not cars_queue.empty():
     print(cars_queue.get())
