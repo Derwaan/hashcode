@@ -22,18 +22,31 @@ class Route:
         self.earliest_start = earliest_start
         self.latest_finish = latest_finish
 
+    def distance(self):
+        return abs(self.start_point[0] - self.end_point[0]) + abs(self.start_point[1] - self.end_point[1])
+
+    def __str__(self):
+        return "%s %s %s %s %s" % (self.start_point, self.end_point,
+                                self.earliest_start, self.latest_finish,
+                                self.distance())
+
+
 routes = []
 
 for i in range(1, N+1):
     input = text[i].split()
-    a = input[0]
-    b = input[1]
-    x = input[2]
-    y = input[3]
-    s = input[4]
-    f = input[5]
+    a = int(input[0])
+    b = int(input[1])
+    x = int(input[2])
+    y = int(input[3])
+    s = int(input[4])
+    f = int(input[5])
 
     route = Route((a,b), (x,y), s, f)
     routes.append(route)
 
-print(routes)
+
+routes.sort(key=lambda x: (x.earliest_start, x.distance()))
+
+for route in routes:
+    print(route)
