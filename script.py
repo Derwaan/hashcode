@@ -61,8 +61,27 @@ class Car:
             output +=" " + str(route.id)
         return output
 
+    def distanceToRoute(self, route):
+        lastPos = (0,0)
+        if (len(self.routes) > 0):
+            lastPos = self.routes[len(self.routes)-1].end_point
+        return abs(lastPos[0] - route.start_point[0]) + abs(lastPos[1] - route.start_point[1])
+
+
 routes = []
 cars_queue = queue.PriorityQueue()
+
+def distance_between_two_routes(route1, route2):
+        return abs(route1.end_point[0] - route2.start_point[0]) + abs(route2.start_point[1] - route1.end_point[1])
+
+def is_reachable(route, free_car):
+	if len(free_car.routes) == 0 :
+		return True
+	last_route = free_car.routes[-1]
+	inter = distance_between_two_routes(last_route,route)
+
+	return route.latest_finish >= inter + route.distance()
+
 
 for i in range(1, F+1):
     cars_queue.put(Car(i))
@@ -80,11 +99,14 @@ for i in range(1, N+1):
     routes.append(route)
 
 
-routes.sort(key=lambda x: (x.earliest_start, x.distance()))
+#routes.sort(key=lambda x: (x.distance(), x.latest_finish))
 
-for route in routes:
+while len(routes) > 0:
     free_car = cars_queue.get()
-    free_car.add_route(route)
+    routes.sort(key=lambda x: (free_car.distanceToRoute(x)+x.distance()))
+    temp = routes.pop(0)
+    if(is_reachable(temp, free_car)):
+        free_car.add_route(temp)
     cars_queue.put(free_car)
 
 while not cars_queue.empty():
